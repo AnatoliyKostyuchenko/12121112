@@ -19,11 +19,12 @@ public class EchoKlient extends JFrame {
     private DataOutputStream dataOutputStream;
 
     public EchoKlient(){
+        try{
+            connection();
+        }catch(IOException e){
+            e.printStackTrace();
+        }
         prepare();
-        connection();
-        sendMeassage();
-        closeConnection();
-
     private void connection() throws IOException {
     socket = new Socket(SERVER_ADDRESS, SERVER_PORT);
     dataInputStream = new DataInputStream(socket.getInputStream());

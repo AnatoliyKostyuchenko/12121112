@@ -20,6 +20,7 @@ public class Main{
             while(true){
                 String message = dataInputStream.readUTF();
                 if(message.equals("end")){
+                    dataOutputStream.writeUTF(message);
                     break;
                 }
                 dataOutputStream.writeUTF(message);
