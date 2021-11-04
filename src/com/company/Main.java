@@ -14,7 +14,7 @@ public class Main{
 
     public static void main(String[] args) {
 	// write your code here
-        SwingUtilities.invokeLater(EchoKlient::new);
+
         Socket socket = null;
         try (ServerSocket serverSocket = new ServerSocket(8089)){
           System.out.println("Ожидается сообщение");

@@ -19,6 +19,7 @@ public class EchoKlient extends JFrame {
     public DataOutputStream dataOutputStream;
 
     public EchoKlient() {
+
         try {
             connection();
         } catch (IOException e) {
@@ -36,7 +37,9 @@ public class EchoKlient extends JFrame {
                 try {
                     while (true) {
                         String messageFromServer = dataInputStream.readUTF();
-                        if (messageFromServer.equals("end"))
+                        if (messageFromServer.equals("end")) {
+                            break;
+                        }
                             textArea.append(messageFromServer);
                         textArea.append("\n");
                     }
@@ -76,34 +79,10 @@ public class EchoKlient extends JFrame {
         }
     }
     private void prepare(){
-        setBounds( 200,200,800,800);
-        setTitle("Exo");
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        String str = console.nextLine();
+    }
 
-        textArea = new JTextArea();
-        textArea.setEditable(false);
-        textArea.setLineWrap(true);
-        add(new JScrollPane(textArea), BorderLayout.CENTER);
-
-        JPanel panel = new JPanel();
-        JButton button = new JButton("Отправить");
-        panel.add(button, BorderLayout.EAST);
-        textField = new JTextField();
-        panel.add(textField, BorderLayout.CENTER);
-
-        add(panel, BorderLayout.SOUTH);
-        button.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-            sendMessage();
-            }
-        });
-        textField.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-         sendMessage();
-            }
-        });
-        setVisible(true);
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(EchoKlient::new);
     }
 }
