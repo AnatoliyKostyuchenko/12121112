@@ -8,6 +8,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.util.Scanner;
 
 public class EchoKlient extends JFrame {
     public final String SERVER_ADDRESS = "localhost";
@@ -24,8 +25,7 @@ public class EchoKlient extends JFrame {
             connection();
         } catch (IOException e) {
             e.printStackTrace();
-        }
-        prepare();
+        } prepare();
     }
     private void connection() throws IOException {
         socket = new Socket(SERVER_ADDRESS, SERVER_PORT);
@@ -67,20 +67,20 @@ public class EchoKlient extends JFrame {
         }
     }
     private void sendMessage(){
-        if (textField.getText().trim().isEmpty()){
+        if (TextField.getText().trim().isEmpty()){
             return;
         }
         try{
             dataOutputStream.writeUTF(textField.getText());
-            textField.setText("");
             textField.grabFocus();
         }catch (Exception ex){
             ex.printStackTrace();
         }
     }
-    private void prepare(){
-        String str = console.nextLine();
-    }
+public static void prepare(){
+    Scanner console = new Scanner(System.in);
+    String str = console.nextLine();
+}
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(EchoKlient::new);

@@ -33,7 +33,17 @@ public class Main{
         }catch (IOException e){
             e.printStackTrace();
         }
-
+        sendMessage()
     }
-
+    private void sendMessage(){
+        if (TextField.getText().trim().isEmpty()){
+            return;
+        }
+        try{
+            dataOutPutStram.writeUTF(TextField.getText());
+            TextField.grabFocus();
+        }catch (Exception ex){
+            ex.printStackTrace();
+        }
+    }
 }
