@@ -4,9 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.net.Socket;
 import java.util.Scanner;
 
@@ -25,12 +23,13 @@ public class EchoKlient extends JFrame {
             connection();
         } catch (IOException e) {
             e.printStackTrace();
-        } prepare();
+        }  read();
     }
     private void connection() throws IOException {
         socket = new Socket(SERVER_ADDRESS, SERVER_PORT);
-        dataInputStream = new DataInputStream(socket.getInputStream());
-        dataOutputStream = new DataOutputStream(socket.getOutputStream());
+        BufferedReader br =new BufferedReader(new InputStreamReader(System.in));
+        dataInputStream ois = new DataInputStream(socket.getInputStream());
+        dataOutputStream oos= new DataOutputStream(socket.getOutputStream());
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -40,8 +39,6 @@ public class EchoKlient extends JFrame {
                         if (messageFromServer.equals("end")) {
                             break;
                         }
-                            textArea.append(messageFromServer);
-                        textArea.append("\n");
                     }
                 } catch (Exception ex) {
                     ex.printStackTrace();
@@ -67,9 +64,6 @@ public class EchoKlient extends JFrame {
         }
     }
     private void sendMessage(){
-        if (TextField.getText().trim().isEmpty()){
-            return;
-        }
         try{
             dataOutputStream.writeUTF(textField.getText());
             textField.grabFocus();
@@ -77,11 +71,14 @@ public class EchoKlient extends JFrame {
             ex.printStackTrace();
         }
     }
-public static void prepare(){
-    Scanner console = new Scanner(System.in);
-    String str = console.nextLine();
-}
 
+public static void read(){
+String clientCommand;
+    oos.writeUTF(clientCommand);
+    oos.flush();
+    System.out.println("Client send message " + clientCommand + " to server.");
+    }
+}
     public static void main(String[] args) {
         SwingUtilities.invokeLater(EchoKlient::new);
     }

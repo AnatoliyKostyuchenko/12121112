@@ -36,14 +36,7 @@ public class Main{
         sendMessage()
     }
     private void sendMessage(){
-        if (TextField.getText().trim().isEmpty()){
-            return;
-        }
-        try{
-            dataOutPutStram.writeUTF(TextField.getText());
-            TextField.grabFocus();
-        }catch (Exception ex){
-            ex.printStackTrace();
-        }
+
+    }
     }
 }
