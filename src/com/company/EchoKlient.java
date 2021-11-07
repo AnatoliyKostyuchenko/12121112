@@ -20,15 +20,17 @@ public class EchoKlient extends JFrame {
     public EchoKlient() {
 
         try {
-            EchoKlient
+            connection();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
+
+    public static void connection() {
         socket = new Socket(SERVER_ADDRESS, SERVER_PORT);
-        BufferedReader br =new BufferedReader(new InputStreamReader(System.in));
-        dataInputStream ois = new DataInputStream(socket.getInputStream());
-        dataOutputStream oos= new DataOutputStream(socket.getOutputStream());
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        DataInputStream ois = new DataInputStream(socket.getInputStream());
+        DataOutputStream oos = new DataOutputStream(socket.getOutputStream());
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -44,34 +46,44 @@ public class EchoKlient extends JFrame {
                 }
             }
         }).start();
-        try{
-            dataOutputStream.close();
-        }catch(Exception ex){
+    }
+
+    public static potoki() {
+        try {
+            DataOutputStream.close();
+        } catch (Exception ex) {
 
         }
-        try{
-            dataInputStream.close();
-        }catch(Exception ex){
+        try {
+            DataInputStream.close();
+        } catch (Exception ex) {
 
         }
-        try{
+        try {
             socket.close();
-        }catch(Exception ex){
+        } catch (Exception ex) {
 
         }
-        try{
+        try {
             dataOutputStream.writeUTF(textField.getText());
             textField.grabFocus();
-        }catch (Exception ex){
+        } catch (Exception ex) {
             ex.printStackTrace();
         }
-
-String clientCommand;
-    oos.writeUTF(clientCommand);
-    oos.flush();
-    System.out.println("Client send message " + clientCommand + " to server.");
     }
+
+    public static sendMessage {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        DataInputStream ois = new DataInputStream(socket.getInputStream());
+        DataOutputStream oos = new DataOutputStream(socket.getOutputStream());
+        String clientCommand;
+        oos.writeUTF(clientCommand);
+        oos.flush();
+        System.out.println("Client send message " + clientCommand + " to server.");
+    }
+
     public static void main(String[] args) {
         SwingUtilities.invokeLater(EchoKlient::new);
     }
+}
 }
