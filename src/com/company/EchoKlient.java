@@ -78,7 +78,6 @@ String clientCommand;
     oos.flush();
     System.out.println("Client send message " + clientCommand + " to server.");
     }
-}
     public static void main(String[] args) {
         SwingUtilities.invokeLater(EchoKlient::new);
     }
