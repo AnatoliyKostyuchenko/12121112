@@ -14,7 +14,9 @@ public class EchoKlient extends JFrame {
     public JTextField textField;
     public JTextArea textArea;
     public Socket socket;
-
+    public BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+    public DataInputStream ois = new DataInputStream(socket.getInputStream());
+    public DataOutputStream oos = new DataOutputStream(socket.getOutputStream());
     public EchoKlient() {
 
         try {
@@ -26,15 +28,13 @@ public class EchoKlient extends JFrame {
 
     public static void connection() {
         socket = new Socket(SERVER_ADDRESS, SERVER_PORT);
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        DataInputStream ois = new DataInputStream(socket.getInputStream());
-        DataOutputStream oos = new DataOutputStream(socket.getOutputStream());
+
         new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
                     while (true) {
-                        String messageFromServer = dataInputStream.readUTF();
+                        String messageFromServer = ois.readUTF();
                         if (messageFromServer.equals("end")) {
                             break;
                         }
@@ -48,12 +48,12 @@ public class EchoKlient extends JFrame {
 
     public static potoki() {
         try {
-            DataOutputStream.close();
+            oos.close();
         } catch (Exception ex) {
 
         }
         try {
-            DataInputStream.close();
+            ois.close();
         } catch (Exception ex) {
 
         }
@@ -63,8 +63,7 @@ public class EchoKlient extends JFrame {
 
         }
         try {
-            dataOutputStream.writeUTF(textField.getText());
-            textField.grabFocus();
+            oos.writeUTF(textField.getText());
         } catch (Exception ex) {
             ex.printStackTrace();
         }
