@@ -20,12 +20,11 @@ public class EchoKlient extends JFrame {
     public EchoKlient() {
 
         try {
-            connection();
+            EchoKlient
         } catch (IOException e) {
             e.printStackTrace();
-        }  read();
+        }
     }
-    private void connection() throws IOException {
         socket = new Socket(SERVER_ADDRESS, SERVER_PORT);
         BufferedReader br =new BufferedReader(new InputStreamReader(System.in));
         dataInputStream ois = new DataInputStream(socket.getInputStream());
@@ -45,8 +44,6 @@ public class EchoKlient extends JFrame {
                 }
             }
         }).start();
-    }
-    private void closeConnection(){
         try{
             dataOutputStream.close();
         }catch(Exception ex){
@@ -62,17 +59,13 @@ public class EchoKlient extends JFrame {
         }catch(Exception ex){
 
         }
-    }
-    private void sendMessage(){
         try{
             dataOutputStream.writeUTF(textField.getText());
             textField.grabFocus();
         }catch (Exception ex){
             ex.printStackTrace();
         }
-    }
 
-public static void read(){
 String clientCommand;
     oos.writeUTF(clientCommand);
     oos.flush();
