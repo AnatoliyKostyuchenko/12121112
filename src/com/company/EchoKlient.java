@@ -8,27 +8,24 @@ import java.io.*;
 import java.net.Socket;
 import java.util.Scanner;
 
-public class EchoKlient extends JFrame {
+public class EchoKlient {
     public final String SERVER_ADDRESS = "localhost";
     public final int SERVER_PORT = 8089;
-    public JTextField textField;
-    public JTextArea textArea;
     public Socket socket;
-    public BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-    public DataInputStream ois = new DataInputStream(socket.getInputStream());
-    public DataOutputStream oos = new DataOutputStream(socket.getOutputStream());
-    public EchoKlient() {
+    public BufferedReader br;
+    public DataInputStream ois;
+    public DataOutputStream oos;
 
-        try {
-            connection();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
 
-    public static void connection() {
+    public EchoKlient() throws IOException {
+
+
+
+    public void connection() {
         socket = new Socket(SERVER_ADDRESS, SERVER_PORT);
-
+            br = new BufferedReader(new InputStreamReader(System.in));
+            ois = new DataInputStream(socket.getInputStream());
+            oos = new DataOutputStream(socket.getOutputStream());
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -46,7 +43,7 @@ public class EchoKlient extends JFrame {
         }).start();
     }
 
-    public static potoki() {
+    public void potoki(){
         try {
             oos.close();
         } catch (Exception ex) {
@@ -62,25 +59,17 @@ public class EchoKlient extends JFrame {
         } catch (Exception ex) {
 
         }
-        try {
-            oos.writeUTF(textField.getText());
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
     }
 
-    public static sendMessage {
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        DataInputStream ois = new DataInputStream(socket.getInputStream());
-        DataOutputStream oos = new DataOutputStream(socket.getOutputStream());
-        String clientCommand;
+    public void sendMessage() throws IOException {
+        String clientCommand = br.readLine();
         oos.writeUTF(clientCommand);
         oos.flush();
         System.out.println("Client send message " + clientCommand + " to server.");
     }
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(EchoKlient::new);
+    public static void main(String[] args) throws IOException {
+        new EchoKlient();
     }
 }
-}
+
