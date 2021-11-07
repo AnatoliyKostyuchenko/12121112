@@ -14,8 +14,6 @@ public class EchoKlient extends JFrame {
     public JTextField textField;
     public JTextArea textArea;
     public Socket socket;
-    public DataInputStream dataInputStream;
-    public DataOutputStream dataOutputStream;
 
     public EchoKlient() {
 
