@@ -18,6 +18,11 @@ public class EchoKlient {
 
 
     public EchoKlient() throws IOException {
+        try {
+            connection();
+        }catch(IOException e){
+            e.printStackTrace();
+        }
     }
         public void connection() throws IOException {
             socket = new Socket(SERVER_ADDRESS, SERVER_PORT);
@@ -29,6 +34,7 @@ public class EchoKlient {
                 public void run() {
                     try {
                         while (true) {
+                            sendMessage();
                             String messageFromServer = ois.readUTF();
                             if (messageFromServer.equals("end")) {
                                 break;
@@ -64,9 +70,7 @@ public class EchoKlient {
         oos.writeUTF(clientCommand);
         oos.flush();
         System.out.println("Client send message " + clientCommand + " to server.");
-        Thread.sleep(1000);
-        String in = ois.readUTF();
-        System.out.println(in);
+
     }
 
     public static void main(String[] args) throws IOException {

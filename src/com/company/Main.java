@@ -28,7 +28,7 @@ public class Main {
                     dataOutputStream.writeUTF(message);
                     break;
                 }
-                dataOutputStream.writeUTF(message);
+                System.out.println("Klient:"+ message);
             }
         } catch (IOException e) {
             e.printStackTrace();
