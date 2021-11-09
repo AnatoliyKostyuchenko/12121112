@@ -16,7 +16,7 @@ public class Main {
         // write your code here
 
         Socket socket = null;
-        try (ServerSocket serverSocket = new ServerSocket(8089)) {
+        try (ServerSocket serverSocket = new ServerSocket(8099)) {
             System.out.println("Ожидается сообщение");
             socket = serverSocket.accept();
             System.out.println("Сообщение произошло");

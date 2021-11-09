@@ -18,30 +18,28 @@ public class EchoKlient {
 
 
     public EchoKlient() throws IOException {
-
-
-
-    public void connection() {
-        socket = new Socket(SERVER_ADDRESS, SERVER_PORT);
+    }
+        public void connection() throws IOException {
+            socket = new Socket(SERVER_ADDRESS, SERVER_PORT);
             br = new BufferedReader(new InputStreamReader(System.in));
             ois = new DataInputStream(socket.getInputStream());
             oos = new DataOutputStream(socket.getOutputStream());
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    while (true) {
-                        String messageFromServer = ois.readUTF();
-                        if (messageFromServer.equals("end")) {
-                            break;
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        while (true) {
+                            String messageFromServer = ois.readUTF();
+                            if (messageFromServer.equals("end")) {
+                                break;
+                            }
                         }
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
                     }
-                } catch (Exception ex) {
-                    ex.printStackTrace();
                 }
-            }
-        }).start();
-    }
+            }).start();
+        }
 
     public void potoki(){
         try {
@@ -61,11 +59,14 @@ public class EchoKlient {
         }
     }
 
-    public void sendMessage() throws IOException {
+    public void sendMessage() throws IOException, InterruptedException {
         String clientCommand = br.readLine();
         oos.writeUTF(clientCommand);
         oos.flush();
         System.out.println("Client send message " + clientCommand + " to server.");
+        Thread.sleep(1000);
+        String in = ois.readUTF();
+        System.out.println(in);
     }
 
     public static void main(String[] args) throws IOException {
