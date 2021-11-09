@@ -24,7 +24,9 @@ public class EchoKlient {
             e.printStackTrace();
         }
     }
-        public void connection() throws IOException {
+        public
+
+        void connection() throws IOException {
             socket = new Socket(SERVER_ADDRESS, SERVER_PORT);
             br = new BufferedReader(new InputStreamReader(System.in));
             ois = new DataInputStream(socket.getInputStream());
@@ -36,9 +38,7 @@ public class EchoKlient {
                 while (true) {
                     sendMessage();
                     String messageFromServer = ois.readUTF();
-                    if (messageFromServer.equals("end")) {
-                        break;
-                    }
+                    if (messageFromServer.equals("end")) break;
                 }
             } catch (Exception ex) {
                 ex.printStackTrace();
