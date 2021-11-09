@@ -29,22 +29,22 @@ public class EchoKlient {
             br = new BufferedReader(new InputStreamReader(System.in));
             ois = new DataInputStream(socket.getInputStream());
             oos = new DataOutputStream(socket.getOutputStream());
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        while (true) {
-                            sendMessage();
-                            String messageFromServer = ois.readUTF();
-                            if (messageFromServer.equals("end")) {
-                                break;
-                            }
-                        }
-                    } catch (Exception ex) {
-                        ex.printStackTrace();
+            Thread t2= new Thread (new Runnable() {
+        @Override
+        public void run() {
+            try {
+                while (true) {
+                    sendMessage();
+                    String messageFromServer = ois.readUTF();
+                    if (messageFromServer.equals("end")) {
+                        break;
                     }
                 }
-            }).start();
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }
+    }).start();
         }
 
     public void potoki(){
@@ -73,7 +73,7 @@ public class EchoKlient {
 
     }
 
-    public static void main(String[] args) throws IOException {
+    public  void main(String[] args) throws IOException {
         new EchoKlient();
     }
 }

@@ -4,34 +4,51 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 
 public class Main {
 
-    public static void main(String[] args) {
-        // write your code here
+        public static final int SERVER_PORT = 8089;
 
-        Socket socket = null;
-        try (ServerSocket serverSocket = new ServerSocket(8099)) {
-            System.out.println("Ожидается сообщение");
-            socket = serverSocket.accept();
-            System.out.println("Сообщение произошло");
-            DataInputStream dataInputStream = new DataInputStream((socket.getInputStream()));
-            DataOutputStream dataOutputStream = new DataOutputStream(socket.getOutputStream());
-            while (true) {
-                String message = dataInputStream.readUTF();
-                if (message.equals("end")) {
-                    dataOutputStream.writeUTF(message);
-                    break;
+        public static void main(String[] args) {
+                Socket socket = null;
+                try (ServerSocket serverSocket = new ServerSocket(SERVER_PORT)) {
+                        System.out.println("Ожидается сообщение");
+                        socket = serverSocket.accept();
+                        System.out.println("Соединение произошло!!!!");
+                        DataInputStream dataInputStream = new DataInputStream((socket.getInputStream()));
+                        DataOutputStream dataOutputStream = new DataOutputStream(socket.getOutputStream());
+                        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+                        Thread t1 = new Thread(new Runnable() {
+                                @Override
+                                public void run() {   while (true)
+
+                                {
+                                        String message = dataInputStream.readUTF();
+                                        if (message.equals("end")) {
+                                                break;
+                                        }
+                                        System.out.println("Klient:" + message);
+                                        String messageFromServer = null;
+                                        try {
+                                                messageFromServer = br.readLine();
+                                        } catch (IOException e) {
+                                                e.printStackTrace();
+                                        }
+                                        try {
+                                                dataOutputStream.writeUTF(messageFromServer);
+                                        } catch (IOException e) {
+                                                e.printStackTrace();
+                                        }
+                                        System.out.println("Server: " + messageFromServer);
+                                }
+
+                                }
+                        }).start();
+                } catch (IOException e) {
+                        e.printStackTrace();
                 }
-                System.out.println("Klient:"+ message);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
         }
-    }
 }
