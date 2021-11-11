@@ -12,7 +12,7 @@ public class Main {
 
         public static final int SERVER_PORT = 8089;
 
-        public static void main(String[] args) {
+        public static void main(String[] args) throws InterruptedException {
                 Socket socket = null;
                 try (ServerSocket serverSocket = new ServerSocket(SERVER_PORT)) {
                         System.out.println("Ожидается сообщение");
@@ -21,12 +21,17 @@ public class Main {
                         DataInputStream dataInputStream = new DataInputStream((socket.getInputStream()));
                         DataOutputStream dataOutputStream = new DataOutputStream(socket.getOutputStream());
                         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-                        Thread t1 = new Thread(new Runnable() {
+                          Thread t1 = new Thread(new Runnable() {
                                 @Override
-                                public void run() {   while (true)
+                                public synchronized void run() {   while (true)
 
                                 {
-                                        String message = dataInputStream.readUTF();
+                                        String message = null;
+                                        try {
+                                                message = dataInputStream.readUTF();
+                                        } catch (IOException e) {
+                                                e.printStackTrace();
+                                        }
                                         if (message.equals("end")) {
                                                 break;
                                         }
@@ -46,7 +51,8 @@ public class Main {
                                 }
 
                                 }
-                        }).start();
+                        });t1.start();
+                         t1.join();
                 } catch (IOException e) {
                         e.printStackTrace();
                 }

@@ -17,23 +17,21 @@ public class EchoKlient {
     public DataOutputStream oos;
 
 
-    public EchoKlient() throws IOException {
+    public EchoKlient() throws IOException, InterruptedException {
         try {
             connection();
         }catch(IOException e){
             e.printStackTrace();
         }
     }
-        public
-
-        void connection() throws IOException {
+        public void connection() throws IOException, InterruptedException {
             socket = new Socket(SERVER_ADDRESS, SERVER_PORT);
             br = new BufferedReader(new InputStreamReader(System.in));
             ois = new DataInputStream(socket.getInputStream());
             oos = new DataOutputStream(socket.getOutputStream());
             Thread t2= new Thread (new Runnable() {
         @Override
-        public void run() {
+        public synchronized void run() {
             try {
                 while (true) {
                     sendMessage();
@@ -44,7 +42,9 @@ public class EchoKlient {
                 ex.printStackTrace();
             }
         }
-    }).start();
+    });
+            t2.start();
+            t2.join();
         }
 
     public void potoki(){
@@ -73,7 +73,7 @@ public class EchoKlient {
 
     }
 
-    public  void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, InterruptedException {
         new EchoKlient();
     }
 }
