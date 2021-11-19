@@ -9,18 +9,12 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
-import javax.swing.SwingUtilities;
+import javax.swing.*;
 
 public class EchoClient extends JFrame {
 
     private final String SERVER_ADDRESS = "localhost";
-    private final int SERVER_PORT = 8089;
+    private final int SERVER_PORT = 8190;
 
     private JTextField textField;
     private JTextArea textArea;
@@ -28,7 +22,7 @@ public class EchoClient extends JFrame {
     private Socket socket;
     private DataInputStream dataInputStream;
     private DataOutputStream dataOutputStream;
-
+    private String login;
     public EchoClient() {
         try {
             openConnection();
@@ -48,9 +42,18 @@ public class EchoClient extends JFrame {
                     String messageFromServer = dataInputStream.readUTF();
                     if (messageFromServer.equals("/end")) {
                         break;
+                    } else if(messageFromServer.startsWith(Constants.ACTIVE_COMMAND)){
+
+                    }else if(messageFromServer.startsWith(Constants.AUTH_OK_COMMAND)) {
+                        String[] tokens = messageFromServer.split("\\s");
+                        this.login = token[1];
+                        textArea.append("Успешно авторизован как" + login);
+                    }else{
+                            textArea.append(messageFromServer);
+                            textArea.append("\n");
+                        }
                     }
-                    textArea.append(messageFromServer);
-                    textArea.append("\n");
+
                 }
                 textArea.append("Соединение разорвано");
                 textField.setEnabled(false);
@@ -86,78 +89,69 @@ public class EchoClient extends JFrame {
             return;
         }
         try {
-            String one = dataInputStream.readUTF();
-            if(one.startsWith(Constants.AUTH_ONE_COMMAND)){
-                synchronized (this){
-
-                }
-            }else {
-                dataOutputStream.writeUTF(textField.getText());
-                textField.setText("");
-                textField.grabFocus();
-            }
-        }catch (Exception ex) {
+            dataOutputStream.writeUTF(textField.getText());
+            textField.setText("");
+            textField.grabFocus();
+        } catch (Exception ex) {
             ex.printStackTrace();
         }
     }
 
-    private void prepareUI() {
-        setBounds(200, 200, 500, 500);
-        setTitle("EchoClient");
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        private void prepareUI() {
+            setBounds(200, 200, 500, 500);
+            setTitle("EchoClient");
+            setDefaultCloseOperation(EXIT_ON_CLOSE);
 
-        textArea = new JTextArea();
-        textArea.setEditable(false);
-        textArea.setLineWrap(true);
-        add(new JScrollPane(textArea), BorderLayout.CENTER);
+            textArea = new JTextArea();
+            textArea.setEditable(false);
+            textArea.setLineWrap(true);
+            add(new JScrollPane(textArea), BorderLayout.CENTER);
 
+            JPanel panel = new JPanel(new BorderLayout());
+            JButton button = new JButton("Send");
+            panel.add(button, BorderLayout.EAST);
+            textField = new JTextField();
+            panel.add(textField, BorderLayout.CENTER);
 
-        JPanel panel = new JPanel(new BorderLayout());
-        JButton button = new JButton("Send");
-        panel.add(button, BorderLayout.EAST);
-        textField = new JTextField();
-        panel.add(textField, BorderLayout.CENTER);
+            add(panel, BorderLayout.SOUTH);
 
-        add(panel, BorderLayout.SOUTH);
+            JPanel loginPanel = new JPanel(new BorderLayout());
+            JTextField loginField = new JTextField();
+            loginPanel.add(loginField, BorderLayout.WEST);
+            JTextField passField = new JTextField();
+            loginPanel.add(passField, BorderLayout.CENTER);
+            JButton authButton = new JButton("Авторизоваться");
+            loginPanel.add(authButton, BorderLayout.EAST);
+            add(loginPanel, BorderLayout.NORTH);
+            authButton.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    try {
+                        dataOutputStream.writeUTF(Constants.AUTH_COMMAND + " " + loginField.getText() + " " + passField.getText());
+                    } catch (IOException ioException) {
+                        ioException.printStackTrace();
+                    }
+                }
+            });
 
-        JPanel loginPanel = new JPanel(new BorderLayout());
-         JTextField loginField = new JTextField();
-         loginPanel.add(loginField, BorderLayout.WEST);
-         JTextField passField = new JTextField();
-         loginPanel.add(passField, BorderLayout.CENTER);
-         JButton authButton = new JButton("Авторизоваться");
-         loginPanel.add(authButton, BorderLayout.EAST);
-         add(loginPanel, BorderLayout.NORTH);
-         authButton.addActionListener(new ActionListener() {
-             @Override
-             public void actionPerformed(ActionEvent e) {
-                 try {
-                     dataOutputStream.writeUTF(Constants.AUTH_COMMAND +" "+ loginField.getText()+ " " + passField.getText());
-                 } catch (IOException ioException) {
-                     ioException.printStackTrace();
-                 }
-             }
-         });
+            button.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    sendMessage();
+                }
+            });
+            textField.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    sendMessage();
+                }
+            });
 
-        button.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                sendMessage();
-            }
-        });
-        textField.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                sendMessage();
-            }
-        });
+            setVisible(true);
+        }
 
-        setVisible(true);
-    }
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(EchoClient::new);
     }
-
-
 }

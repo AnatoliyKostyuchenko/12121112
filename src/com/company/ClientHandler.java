@@ -5,23 +5,22 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 
-import static sun.jvm.hotspot.runtime.PerfMemory.start;
 
-//обработчик клиента
 public class ClientHandler {
     private MyServer server;
     private Socket socket;
-    private DataInputStream in;
-    private DataOutputStream out;
+    public DataInputStream in;
+    public DataOutputStream out;
     private String nickname;
 
     public ClientHandler(MyServer server, Socket socket)  {
 
         try {
-            this.server = server;
-            this.socket = socket;
             this.in = new DataInputStream(socket.getInputStream());
             this.out = new DataOutputStream(socket.getOutputStream());
+            this.server = server;
+            this.socket = socket;
+
             new Thread(() ->{
                 try{
                   authorization();
@@ -29,7 +28,11 @@ public class ClientHandler {
                 }catch(IOException ex){
                     ex.printStackTrace();
                 }finally{
-                  closeConnection();
+                    try {
+                        closeConnection();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
             }).start();
         } catch (IOException e) {
@@ -38,8 +41,10 @@ public class ClientHandler {
 
     }
 
+
     private void authorization() throws IOException {
         while(true){
+            long start = System.currentTimeMillis();
             String str = in.readUTF();
             if(str.startsWith(Constants.AUTH_COMMAND)){
                 String[] tokens = str.split("\\s+");
@@ -54,6 +59,11 @@ public class ClientHandler {
                     sendMessage("Неверные логин/пароль");
                 }
             }
+            long timeWork = System.currentTimeMillis() - start;
+            if(timeWork>120000){
+                System.out.println("Время ожидания прошло...");
+                break;
+            }
         }
     }
     public void sendMessage(String message){
@@ -64,16 +74,23 @@ public class ClientHandler {
         }
     }
     private void readMessage() throws IOException {
-        while(true){
+        while(true) {
             String messageFromClient = in.readUTF();
-            System.out.println("Cообщение от" + nickname + " :" +messageFromClient);
-            if (messageFromClient.equals(Constants.END_COMMAND)){
-                break;
+            System.out.println("Cообщение от" + nickname + " :" + messageFromClient);
+            if (messageFromClient.startsWith(Constants.ACTIVE_COMMAND)) {
+                server.printActiveClients();
+            } else {
+                if (messageFromClient.equals(Constants.END_COMMAND)) {
+                    break;
+                }
+                if (messageFromClient.equals(Constants.AUTH_ONE_COMMAND)) {
+                    server.broadcastMessageToOneClient(messageFromClient, nickname);
+                }
+                server.broadcastMessage(messageFromClient);//распрострнаитель сообщений
             }
-            server.broadcastMessage(messageFromClient);//распрострнаитель сообщений
         }
     }
-    private void closeConnection(){
+    private void closeConnection() throws IOException {
         server.unsubscribe(this);
         server.broadcastMessage(nickname + "вышел из чата");
         try{
@@ -92,4 +109,9 @@ public class ClientHandler {
 
         }
     }
+
+    public String getNickname() {
+        return nickname;
+    }
+
 }
