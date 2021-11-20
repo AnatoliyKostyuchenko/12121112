@@ -17,8 +17,6 @@ public class MyServer {
     private List<ClientHandler> clients;
 
 
-    public
-
     public AuthService getAuthService() {
         return authService;
     }
