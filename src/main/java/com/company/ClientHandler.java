@@ -1,9 +1,8 @@
 package com.company;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.net.Socket;
+import java.util.Arrays;
 
 
 public class ClientHandler {
@@ -74,7 +73,7 @@ public class ClientHandler {
         }
     }
     private void readMessage() throws IOException {
-        while(true) {
+
             String messageFromClient = in.readUTF();
             System.out.println("Cообщение от" + nickname + " :" + messageFromClient);
             if (messageFromClient.startsWith(Constants.ACTIVE_COMMAND)) {
