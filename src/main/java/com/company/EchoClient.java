@@ -102,6 +102,7 @@ import javax.swing.*;
     }
 
     private void prepareUI() {
+
         setBounds(200, 200, 500, 500);
         setTitle("EchoClient");
         setDefaultCloseOperation(EXIT_ON_CLOSE);

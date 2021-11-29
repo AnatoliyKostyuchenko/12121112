@@ -12,7 +12,7 @@ public class ClientHandler {
     public DataOutputStream out;
     private String nickname;
 
-    public ClientHandler(MyServer server, Socket socket)  {
+    public ClientHandler(MyServer server, Socket socket) {
 
         try {
             this.in = new DataInputStream(socket.getInputStream());
@@ -20,13 +20,13 @@ public class ClientHandler {
             this.server = server;
             this.socket = socket;
 
-            new Thread(() ->{
-                try{
-                  authorization();
-                  readMessage();
-                }catch(IOException ex){
+            new Thread(() -> {
+                try {
+                    authorization();
+                    readMessage();
+                } catch (IOException ex) {
                     ex.printStackTrace();
-                }finally{
+                } finally {
                     try {
                         closeConnection();
                     } catch (IOException e) {
@@ -42,40 +42,60 @@ public class ClientHandler {
 
 
     private void authorization() throws IOException {
-        while(true){
+        while (true) {
             long start = System.currentTimeMillis();
             String str = in.readUTF();
-            if(str.startsWith(Constants.AUTH_COMMAND)){
+            if (str.startsWith(Constants.AUTH_COMMAND)) {
                 String[] tokens = str.split("\\s+");
                 String nickname = server.getAuthService().authorization(tokens[1], tokens[2]);
                 //дописать проверку наличия ника в чате
-              nickname=nickname;
-                if(nickname != null){
-                  sendMessage(Constants.AUTH_OK_COMMAND + " " + nickname);
-                  server.broadcastMessage(nickname + "Вошёл в чат");
-                  server.subscribe(this);//одписаться на обновления
-                }else{
+                nickname = nickname;
+                if (nickname != null) {
+                    sendMessage(Constants.AUTH_OK_COMMAND + " " + nickname);
+
+                    server.broadcastMessage(nickname + "Вошёл в чат");
+                    server.subscribe(this);//одписаться на обновления
+                } else {
                     sendMessage("Неверные логин/пароль");
                 }
             }
             long timeWork = System.currentTimeMillis() - start;
-            if(timeWork>120000){
+            if (timeWork > 120000) {
                 System.out.println("Время ожидания прошло...");
                 break;
             }
         }
     }
-    public void sendMessage(String message){
+
+    public void sendMessage(String message) throws IOException {
         try {
             out.writeUTF(message);
-        } catch (IOException e){
+            File file = new File("com.company");
+
+            try (FileOutputStream out = new FileOutputStream(file)) {
+                out.write(message.getBytes());
+                StringBuffer sb= new StringBuffer(100);
+                sb.append(false);
+                sb.append(message);
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
-    private void readMessage() throws IOException {
 
-            String messageFromClient = in.readUTF();
-            System.out.println("Cообщение от" + nickname + " :" + messageFromClient);
+    private void readMessage() throws IOException {
+        try(FileInputStream out = new FileInputStream("com.company")){
+            while(out.available()>0){
+                out.read();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        String messageFromClient = in.readUTF();
+        System.out.println("Cообщение от" + nickname + " :" + messageFromClient);
+        while (true) {
             if (messageFromClient.startsWith(Constants.ACTIVE_COMMAND)) {
                 server.printActiveClients();
             } else {
@@ -89,28 +109,30 @@ public class ClientHandler {
             }
         }
     }
-    private void closeConnection() throws IOException {
-        server.unsubscribe(this);
-        server.broadcastMessage(nickname + "вышел из чата");
-        try{
-            in.close();
-        }catch(IOException ex){
 
-        }
-        try{
-           out.close();
-        }catch(IOException ex){
+        private void closeConnection () throws IOException {
+            server.unsubscribe(this);
+            server.broadcastMessage(nickname + "вышел из чата");
+            try {
+                in.close();
+            } catch (IOException ex) {
 
-        }
-        try{
-            socket.close();
-        }catch (IOException ex){
+            }
+            try {
+                out.close();
+            } catch (IOException ex) {
 
+            }
+            try {
+                socket.close();
+            } catch (IOException ex) {
+
+            }
         }
+
+        public String getNickname () {
+            return nickname;
+        }
+
     }
 
-    public String getNickname() {
-        return nickname;
-    }
-
-}
