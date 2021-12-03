@@ -72,10 +72,9 @@ public class ClientHandler {
             out.writeUTF(message);
             File file = new File("com.company");
 
-            try (FileOutputStream out = new FileOutputStream(file)) {
+            try (FileOutputStream out = new FileOutputStream(file,true)) {
                 out.write(message.getBytes());
                 StringBuffer sb= new StringBuffer(100);
-                sb.append(false);
                 sb.append(message);
             } catch (IOException ex) {
                 ex.printStackTrace();
